@@ -1,0 +1,87 @@
+#!/usr/bin/env node
+
+/**
+ * regular dependencies
+ */
+
+const db = require('sqlite');
+const chunk = require('lodash/chunk');
+const each = require('async/each');
+
+/**
+ * Algolia setup
+ */
+
+const algoliasearch = require('algoliasearch');
+const config = {
+  appId: 'XXX',
+  apiKey: 'XXX', // admin API key
+  indexName: 'wine-search',
+};
+
+if (config.appId === 'XXX') {
+  console.error('You forgot to change the API key');
+}
+
+const client = algoliasearch(config.appId, config.apiKey);
+const index = client.initIndex(config.indexName);
+
+/**
+ * Settings
+ */
+
+function setSettings() {
+  const synonyms = () =>
+    index.batchSynonyms([
+      {
+        objectID: 'red',
+        type: 'synonym',
+        synonyms: ['red', 'rouge'],
+      },
+      {
+        objectID: 'white',
+        type: 'synonym',
+        synonyms: ['white', 'blanc'],
+      },
+      {
+        objectID: 'chateau',
+        type: 'synonym',
+        synonyms: ['ch', 'chateau'],
+      },
+    ]);
+
+  return index
+    .setSettings({
+      searchableAttributes: ['unordered(name)', 'domain', 'year', 'type'],
+      customRanking: ['desc(quality)'],
+      attributesForFaceting: ['type', 'searchable(domain)', 'year', 'price'],
+      optionalWords: ['Ch', 'Chateau', 'Wine', 'Vin'],
+    })
+    .then(synonyms);
+}
+
+/**
+ * Uploading logic
+ * 
+ * 1. open the database
+ * 2. get all data
+ * 3. split it into parts
+ * 4. save them in Algolia
+ */
+
+function end(err) {
+  if (err) {
+    console.error(err);
+    throw err;
+  }
+  setSettings().then(() =>
+    console.log('✨ Done with uploading, get ready to search 🔍')
+  );
+}
+
+Promise.resolve()
+  .then(() => db.open('development.sqlite3', { Promise }))
+  .catch(err => console.error(err.stack))
+  .then(() => db.all('SELECT * from wines'))
+  .then(roles => chunk(roles, 1000))
+  .then(chunks => each(chunks, index.addObjects.bind(index), end));

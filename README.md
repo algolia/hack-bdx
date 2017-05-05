@@ -134,7 +134,7 @@ $ # or you can
 $ yarn add algoliasearch
 ```
 
-And then edit the migration script to push the data to Algolia. First we will register a client:
+And then edit the migration script to push the data to Algolia. First we will register a client with the info we find on [algolia.com/api-keys](https://algolia.com/api-keys):
 
 ```js
 // /bin/migration

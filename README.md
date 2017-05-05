@@ -280,3 +280,119 @@ $(document).ready(function() {
 Let's also remove the now useless call to Algolia in the back-end.  
 In `app/controllers/wines_controller.rb`, just remove the line with `@results`.
 
+## Let's improve it
+
+First, let's add a facet (== filter) to our settings in the `algoliasearch` block in our model:
+
+```ruby
+attributesForFaceting ['searchable(domain)']
+```
+
+Then let's reindex everything to propagate those new settings:
+
+```ruby
+Wine.reindex!
+```
+
+And now let's use this new facet in our front-end.
+
+*HTML*
+```html
+<main>
+  <div id="left-column">
+    <div id="domain"></div>
+  </div>
+  <div id="right-column">
+    <div id="search-input"></div>
+    <div id="stats"></div>
+    <div id="results"></div>
+  </div>
+</main>
+```
+
+*CSS*
+```css
+main {
+  width: 1000px;
+  margin: 0 auto;
+}
+
+#left-column {
+  float: left;
+  width: 23%;
+}
+
+#right-column {
+  width: 74%;
+  margin-left: 26%;
+}
+
+#search-input input {
+  width: 100%;
+}
+```
+
+*JS*
+```js
+$(document).ready(function() {
+  var search = instantsearch({
+    appId: 'XXX',
+    apiKey: 'XXX',
+    indexName: 'Wine',
+    urlSync: true
+  });
+
+  search.addWidget(
+    instantsearch.widgets.searchBox({
+      container: '#search-input',
+      placeholder: 'Search for wines...'
+    })
+  );
+
+  search.addWidget(
+    instantsearch.widgets.stats({
+      container: '#stats'
+    })
+  );
+
+  search.addWidget(
+    instantsearch.widgets.refinementList({
+      container: '#domain',
+      attributeName: 'domain',
+      searchForFacetValues: {
+        placeholder: 'Search for domains'
+      },
+      templates: {
+        header: '<h3>Domain</h3>',
+      }
+    })
+  );
+
+  search.addWidget(
+    instantsearch.widgets.hits({
+      container: '#results',
+      templates: {
+        item: function (hit) {
+          return '' +
+            '<li>' +
+            '  ' + hit._highlightResult.name.value + ',' +
+            '  ' + hit._highlightResult.domain.value + ' - ' +
+            '  ' + hit.year +
+            '</li>';
+        }
+      },
+      transformData: {
+        item: function (hit) {
+          // We just call this function to log the data so that
+          // you can know what you can use in your item template
+          console.log(hit);
+          return hit;
+        }
+      }
+    })
+  );
+
+  search.start();
+});
+```
+

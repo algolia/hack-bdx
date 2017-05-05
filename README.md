@@ -132,3 +132,67 @@ In `app/views/wines/search.html.erb`:
   <% end %>
 </ul>
 ```
+
+## Algolia configuration
+
+The first step is to create an account on https://www.algolia.com/ .  
+You can skip the tutorial as this workshop will walk you through more steps.
+
+Once in your dashboard, the first thing you'll need are your credentials in the [API Keys](https://www.algolia.com/api-keys) tab.
+
+In your `Gemfile`, add our `rails` gem.
+
+```ruby
+gem 'algoliasearch-rails', '~> 1.19.0'
+```
+
+Its documentation can be found here: https://github.com/algolia/algoliasearch-rails .
+
+Then run in a terminal:
+
+```sh
+bundle install
+```
+
+In `config/initializers/algoliasearch.rb`:
+
+```ruby
+AlgoliaSearch.configuration = {
+  application_id: 'XXX',
+  api_key: 'XXX' # Admin API key (for write permissions)
+}
+```
+
+Since we're adding an initializer here, you'll need to restart your `rails s`.
+
+In `app/models/wine.rb`:
+
+```ruby
+include AlgoliaSearch
+algoliasearch do
+  # All the attributes to send to algolia (in this case, everything)
+  attributes :name, :domain, :type, :year, :quantity, :quality, :price, :image
+  # All the attributes we want to search in
+  # unordered means that te position of the word(s) which matched doesn't matter
+  searchableAttributes ['unordered(name)', 'domain', 'year', 'type']
+  # Attribute(s) to use when sorting with the same textual match
+  customRanking ['desc(quality)']
+end
+```
+
+### Verification
+
+Let's check that everything works!
+
+In your `rails console`:
+
+```ruby
+Wine.reindex!
+```
+
+In your console again, try:
+
+```ruby
+pp Wine.search('Margaux')
+```
+

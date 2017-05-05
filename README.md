@@ -86,3 +86,81 @@ router.get('/', function(req, res, next) {
     .then(wines => res.render('index', { wines, query: req.query.q }));
 });
 ```
+
+## Algolia configuration
+
+The first step is to create an account on https://www.algolia.com/ .
+You can skip the tutorial as this workshop will walk you through more steps.
+
+Once in your dashboard, the first thing you'll need are your credentials in the [API Keys](https://www.algolia.com/api-keys) tab.
+
+But before that, we need to make a script that will take all our wine and then upload them to Algolia
+
+### Making the migration script
+
+```sh
+$ npm install --save sqlite lodash async
+$ # or you can
+$ yarn add sqlite lodash async
+```
+
+First get all our data and chunk it
+
+```js
+// /scripts/migration.js
+var db = require('sqlite');
+var chunk = require('lodash/chunk');
+const each = require('async/each');
+
+function end(err) {
+  if (err) throw err;
+  console.log('✨ Done with uploading, get ready to search 🔍');
+}
+
+Promise.resolve()
+  .then(() => db.open('../development.sqlite3', { Promise }))
+  .catch(err => console.error(err.stack))
+  .then(() => db.all('SELECT * from roles'))
+  .then(roles => chunk(roles, 1000));
+```
+
+### Setting up Algolia
+
+Add the module:
+
+```sh
+$ npm install --save algoliasearch
+$ # or you can
+$ yarn add algoliasearch
+```
+
+And then edit the migration script to push the data to Algolia. First we will register a client:
+
+```js
+// /bin/migration
+const algoliasearch = require('algoliasearch');
+const config = {
+  appId: 'XXXXX',
+  apiKey: 'XXXXX', // admin API key
+  indexName: 'wine-search',
+};
+
+const client = algoliasearch(config.appId, config.apiKey);
+const index = client.initIndex(config.indexName);
+```
+
+And then upload each chunk:
+
+```js
+  .then(chunks => each(chunks, index.addObjects.bind(index), end));
+```
+
+Now let's run it: 
+
+```sh
+$ node ./bin/migration
+$ # or
+$ npm run migrate
+```
+
+If this was a real database that isn't static like this one, there's one extra step, which is replication. Replication can be done very simply by listening to the changes in your database, and then for each of them do `index.saveObject`

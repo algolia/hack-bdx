@@ -24,6 +24,25 @@ $(document).ready(function() {
   );
 
   search.addWidget(
+    instantsearch.widgets.stats({
+      container: '#stats'
+    })
+  );
+
+  search.addWidget(
+    instantsearch.widgets.refinementList({
+      container: '#domain',
+      attributeName: 'domain',
+      searchForFacetValues: {
+        placeholder: 'Search for domains'
+      },
+      templates: {
+        header: '<h3>Domain</h3>',
+      }
+    })
+  );
+
+  search.addWidget(
     instantsearch.widgets.hits({
       container: '#results',
       templates: {

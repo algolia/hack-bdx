@@ -10,5 +10,6 @@ class Wine < ApplicationRecord
     searchableAttributes ['unordered(name)', 'domain', 'year', 'type']
     # Attribute(s) to use when sorting with the same textual match
     customRanking ['desc(quality)']
+    attributesForFaceting ['searchable(domain)']
   end
 end

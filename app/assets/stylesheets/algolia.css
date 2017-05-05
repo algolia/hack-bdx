@@ -1,0 +1,18 @@
+main {
+  width: 1000px;
+  margin: 0 auto;
+}
+
+#left-column {
+  float: left;
+  width: 23%;
+}
+
+#right-column {
+  width: 74%;
+  margin-left: 26%;
+}
+
+#search-input input {
+  width: 100%;
+}

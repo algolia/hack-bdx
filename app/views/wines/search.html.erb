@@ -1,10 +1,39 @@
+<header><a href="."><img src="/images/wine-search.svg"></a>
+  <div id="search-input"></div>
+  <div id="search-input-icon"></div>
+</header>
 <main>
   <div id="left-column">
-    <div id="domain"></div>
+    <div id="domain" class="facet"></div>
+    <div id="price" class="facet"></div>
+    <div id="year" class="facet"></div>
+    <div id="type" class="facet"></div>
   </div>
   <div id="right-column">
-    <div id="search-input"></div>
+    <div id="sort-by-wrapper"><span id="sort-by"></span></div>
     <div id="stats"></div>
-    <div id="results"></div>
+    <div id="hits"></div>
+    <div id="pagination"></div>
   </div>
 </main>
+<script id="hit-template" type="text/html">
+  <div class="hit">
+    <div class="hit-image">
+      <img src="{{image}}" alt="{{name}}">
+    </div>
+    <div class="hit-content">
+      <h3 class="hit-price">${{price}}</h3>
+      <h3 class="hit-price">{{quality}}</h3>
+      <h2 class="hit-name">{{{_highlightResult.name.value}}}</h2>
+      <p>{{{_highlightResult.domain.value}}}</p>
+      <p>{{year}}</p>
+      <p>{{{_highlightResult.type.value}}}</p>
+    </div>
+  </div>
+</script>
+<script id="no-results-template" type="text/html">
+  <div id="no-results-message">
+    <p>We didn't find any results for the search <em>"{{query}}"</em>.</p>
+    <a href="." class='clear-all'>Clear search</a>
+  </div>
+</script>

@@ -40,3 +40,49 @@ Promise.resolve()
 ```
 
 </details>
+ 
+## Adding search
+
+We'll now add a basic search using your database.
+
+The first step will be to add a search input on our wine list page.
+
+```pug
+// /views/index.pug
+block content
+  form
+    input(type="search", name="q", placeholder="search", value=query) 
+  for hit in wines
+    .hit
+      .hit-image
+        img(src=hit.image, alt=hit.name)
+      .hit-content
+        h3.hit-price $
+          span=hit.price
+        h3.hit-price= quality
+        h2.hit-name= name
+        p= type
+        p= year
+```
+
+To search, we add a very simple database query to to show what is in our data. 
+
+> note: this is not production code, it has a possible [SQL injection](https://en.wikipedia.org/wiki/SQL_injection)
+
+```js
+// /routes/index.js
+var db = require('sqlite');
+
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  db
+    .all(
+      `
+      SELECT * FROM wines
+      WHERE name LIKE '%${req.query.q}%'
+      LIMIT 5
+      `
+    )
+    .then(wines => res.render('index', { wines, query: req.query.q }));
+});
+```

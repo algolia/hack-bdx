@@ -196,3 +196,16 @@ In your console again, try:
 pp Wine.search('Margaux')
 ```
 
+## Use Algolia for your back-end search
+
+In your Wines controller, you can now replace the back-end search with Algolia.
+Just use `Wine.search` as you just did in your console.
+
+In `app/controllers/wines_controller.rb`:
+
+```ruby
+def search
+  @results = Wine.search(params[:query], { hitsPerPage: 10 })
+end
+```
+

@@ -1,5 +1,15 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  form
+    input(type="search", name="q", placeholder="search", value=query) 
+  for hit in wines
+    .hit
+      .hit-image
+        img(src=hit.image, alt=hit.name)
+      .hit-content
+        h3.hit-price $#{hit.price}
+        h3.hit-price= quality
+        h2.hit-name= hit.name
+        p= hit.type
+        p= hit.year

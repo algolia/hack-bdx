@@ -7,6 +7,15 @@ class WinesController < ApplicationController
     @wines = Wine.all
   end
 
+  # GET /search
+  def search
+    query = '%' + params[:query] + '%'
+    @results = Wine
+               .where('name LIKE ? OR domain LIKE ?', query, query)
+               .order('quality DESC')
+               .limit(10)
+  end
+
   # GET /wines/1
   # GET /wines/1.json
   def show

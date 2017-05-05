@@ -209,3 +209,74 @@ def search
 end
 ```
 
+## Now in the front-end!
+
+We'll do a really basic search again, in the front-end this time, using our [`instantsearch.js` library](https://community.algolia.com/instantsearch.js/).
+
+First step will be to add it to our page.
+In `app/views/layouts/application.html.erb`, add:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/instantsearch.js/1/instantsearch.min.css" />
+<script src="https://cdn.jsdelivr.net/instantsearch.js/1/instantsearch.min.js"></script>
+```
+
+Now let's add the main logic!
+
+First, replace the current search form, the stats and list of results in your view by containers.
+In `app/views/wines/search.html.erb`:
+
+```html
+<div id="search-input"></div>
+<ul id="results"></ul>
+```
+
+Then in `app/assets/javascripts/algolia.js`:
+
+```js
+$(document).ready(function() {
+  var search = instantsearch({
+    appId: 'XXX',
+    apiKey: 'XXX',
+    indexName: 'Wine',
+    urlSync: true
+  });
+
+  search.addWidget(
+    instantsearch.widgets.searchBox({
+      container: '#search-input',
+      placeholder: 'Search for wines...'
+    })
+  );
+
+  search.addWidget(
+    instantsearch.widgets.hits({
+      container: '#results',
+      templates: {
+        item: function (hit) {
+          return '' +
+            '<li>' +
+            '  ' + hit._highlightResult.name.value + ',' +
+            '  ' + hit._highlightResult.domain.value + ' - ' +
+            '  ' + hit.year +
+            '</li>';
+        }
+      },
+      transformData: {
+        item: function (hit) {
+          // We just call this function to log the data so that
+          // you can know what you can use in your item template
+          console.log(hit);
+          return hit;
+        }
+      }
+    })
+  );
+
+  search.start();
+});
+```
+
+Let's also remove the now useless call to Algolia in the back-end.  
+In `app/controllers/wines_controller.rb`, just remove the line with `@results`.
+

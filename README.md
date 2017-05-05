@@ -74,3 +74,61 @@ In `app/views/wines/index.html.erb`, remove those two lines:
 ```
 
 Refresh, and everything should look nice!
+
+## Adding search
+
+We'll now add a basic search using your database.
+
+The first step will be to add a search input on our wine list page.  
+In `app/views/wines/index.html.erb`:
+
+```html
+<form action="/wines/search">
+    <input type="text" name="query" placeholder="Search for wines..."/>
+</form>
+```
+
+Now let's add this `/wines/search` page.  
+In `config/routes.rb`, create a route to `/wines/search`:
+
+```ruby
+resources :wines do
+  collection do
+    get :search
+  end
+end
+```
+
+In the `Wines` controller, add a `search` method.  
+In `app/controllers/wines_controller.rb`:
+
+```ruby
+def search
+  query = '%' + params[:query] + '%'
+  @results = Wine
+             .where('name LIKE ? OR domain LIKE ?', query, query)
+             .order('quality DESC')
+             .limit(10)
+end
+```
+
+Create a `search` view to list those results.  
+In `app/views/wines/search.html.erb`:
+
+```html
+<a href="/wines/">&larr; Back to list</a>
+
+<h1>Search</h1>
+
+<form action="/wines/search">
+  <input name="query" type="text" placeholder="Search for wines..." />
+</form>
+
+<h5><%= @results.size %> results found</h5>
+
+<ul>
+  <% @results.each do |w| %>
+    <li><%= w.name %>, <%= w.domain %> - <%= w.year %></li>
+  <% end %>
+</ul>
+```

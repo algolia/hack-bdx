@@ -2,14 +2,5 @@
 
 <h1>Search</h1>
 
-<form action="/wines/search">
-  <input name="query" type="text" placeholder="Search for wines..." />
-</form>
-
-<h5><%= @results.size %> results found</h5>
-
-<ul>
-  <% @results.each do |w| %>
-    <li><%= w.name %>, <%= w.domain %> - <%= w.year %></li>
-  <% end %>
-</ul>
+<div id="search-input"></div>
+<ul id="results"></ul>

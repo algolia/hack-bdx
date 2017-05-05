@@ -9,7 +9,6 @@ class WinesController < ApplicationController
 
   # GET /search
   def search
-    @results = Wine.search(params[:query], { hitsPerPage: 10 })
   end
 
   # GET /wines/1

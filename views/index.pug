@@ -1,15 +1,29 @@
 extends layout
 
 block content
-  form
-    input(type="search", name="q", placeholder="search", value=query) 
-  for hit in wines
-    .hit
-      .hit-image
-        img(src=hit.image, alt=hit.name)
-      .hit-content
-        h3.hit-price $#{hit.price}
-        h3.hit-price= quality
-        h2.hit-name= hit.name
-        p= hit.type
-        p= hit.year
+  header
+    a(href='.')
+      img(src='/images/wine-search.svg')
+    #search-input
+    #search-input-icon
+  main
+    #left-column
+    #right-column
+      #hits
+  script#hit-template(type='text/html').
+    <div class="hit">
+      <div class="hit-image">
+        <img src="{{image}}" alt="{{name}}">
+      </div>
+      <div class="hit-content">
+        <h3 class="hit-price">${{price}}</h3>
+        <h3 class="hit-price">{{quality}}</h3>
+        <h2 class="hit-name">{{{_highlightResult.name.value}}}</h2>
+        <p>{{{_highlightResult.type.value}}}</p>
+        <p>{{year}}</p>
+        <p>{{{_highlightResult.domain.value}}}</p>
+      </div>
+    </div>
+  script(src='https://cdn.jsdelivr.net/instantsearch.js/1/instantsearch.min.js')
+  script(src='/javascripts/search.js')
+

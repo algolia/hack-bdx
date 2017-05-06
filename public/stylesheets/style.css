@@ -1,8 +1,146 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+/* GENERAL */
+body, input {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
+}
+html {
+  margin: 1em auto;
+}
+header, main, #no-results {
+  width: 1000px;
+  margin: 0 auto;
+}
+main {
+  min-height: 360px;
+}
+#left-column {
+  float: left;
+  width: 23%;
+}
+#right-column {
+  width: 74%;
+  margin-left: 26%;
 }
 
-a {
-  color: #00B7FF;
+.clear:after {
+  content: '';
+  display: table;
+  clear: both;
 }
+
+header {
+  position: relative;
+  height: 80px;
+  margin-top: 40px;
+}
+header img {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  float: left;
+  max-width: 23%;
+}
+
+/* INPUT */
+#search-input input {
+  font-size: 28px;
+  font-weight: 100;
+  width: 74%;
+  margin-left: 26%;
+  padding: 10px 0 6px;
+  border: none;
+  border-bottom: 5px solid #eee;
+}
+#search-input input, #search-input input:focus {
+  transition: border-color .3s ease-in;
+  outline: 0;
+}
+#search-input input:focus {
+  border-color: #881d3a;
+}
+#search-input input::-webkit-input-placeholder, #search-input input:-moz-placeholder, #search-input input:-moz-placeholder, #search-input input:-ms-input-placeholder {
+  font-weight: 100;
+  color: #999;
+}
+#search-input-icon {
+  position: relative;
+}
+#search-input-icon:before {
+  position: absolute;
+  right: 0;
+  bottom: 15px;
+  width: 20px;
+  height: 20px;
+  content: '';
+  cursor: default;
+  background: url(img/search_icon.png) no-repeat;
+}
+#search-input-icon.empty:before {
+  cursor: pointer;
+  background-image: url(img/delete_icon.png);
+}
+
+/* HITS */
+#hits {
+  margin: 4px 0;
+  padding: 10px 0;
+  border-top: 2px solid #eee;
+}
+.hit {
+  font-size: 0;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+.hit-name {
+  margin: 0;
+}
+.hit-image {
+  display: inline-block;
+  width: 16%;
+  text-align: center;
+}
+.hit-image img {
+  max-width: 100%;
+  max-height: 180px;
+}
+.hit-content {
+  font-size: 13px;
+  font-weight: 300;
+  display: inline-block;
+  width: 81%;
+  margin-left: 3%;
+  vertical-align: top;
+}
+
+.hit-content .hit-price {
+  float: right;
+  margin-left: 20px;
+  color: #ffffff;
+  background: #32151f;
+  padding: 4px;
+  border-radius: 3px;
+}
+.hit-content .hit-price, .hit-content .hit-name {
+  font-weight: normal;
+  margin-top: 0;
+}
+
+.hit-content em {
+  font-style: normal;
+  color: #881d3a;
+  border-bottom: solid 1px #881d3a;
+}
+
+.hit-content p {
+  font-size: 13px;
+}
+
+.hit-description em {
+  color: inherit;
+}
+
+.hit-content .hit-description {
+  color: #868686;
+  margin: 1px 0 10px 0;
+  font-size: 14px;
+}
+

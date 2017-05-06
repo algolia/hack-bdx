@@ -164,3 +164,157 @@ $ npm run migrate
 ```
 
 If this was a real database that isn't static like this one, there's one extra step, which is replication. Replication can be done very simply by listening to the changes in your database, and then for each of them do `index.saveObject`
+
+## Now in the front-end!
+
+We'll do a really basic search again, in the front-end this time, using our [`instantsearch.js` library](https://community.algolia.com/instantsearch.js/).
+
+First step will be to add it to our page.
+In `views/layouts/layout.pug`, add:
+
+```pug
+title Wine Search
+meta(name="theme-color", content="#fff5e4")
+link(rel='stylesheet', href='https://cdn.jsdelivr.net/instantsearch.js/1/instantsearch.min.css')
+link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css')
+```
+
+Now let's add the main logic!
+
+First, replace the current search form, the stats and list of results in your view by containers.
+In `views/index.pug`:
+
+```pug
+block content
+  header
+    a(href='.')
+      img(src='/images/wine-search.svg')
+    #search-input
+    #search-input-icon
+  main
+    #left-column
+    #right-column
+      #hits
+  script#hit-template(type='text/html').
+    <div class="hit">
+      <div class="hit-image">
+        <img src="{{image}}" alt="{{name}}">
+      </div>
+      <div class="hit-content">
+        <h3 class="hit-price">${{price}}</h3>
+        <h3 class="hit-price">{{quality}}</h3>
+        <h2 class="hit-name">{{{_highlightResult.name.value}}}</h2>
+        <p>{{{_highlightResult.type.value}}}</p>
+        <p>{{year}}</p>
+        <p>{{{_highlightResult.domain.value}}}</p>
+      </div>
+    </div>
+  script(src='https://cdn.jsdelivr.net/instantsearch.js/1/instantsearch.min.js')
+  script(src='/javascripts/search.js')
+```
+
+Then add `public/javascripts/search.js`:
+
+```js
+/* global instantsearch */
+
+app({
+  appId: 'XXX',
+  apiKey: 'XXX', // search API key
+  indexName: 'wine-search',
+});
+
+function app(opts) {
+  if (opts.appId === 'XXX') {
+    console.error('You forgot to change the API key');
+    return;
+  }
+
+  // ---------------------
+  //
+  //  Init
+  //
+  // ---------------------
+  const search = instantsearch({
+    appId: opts.appId,
+    apiKey: opts.apiKey,
+    indexName: opts.indexName,
+    urlSync: true,
+  });
+
+  // ---------------------
+  //
+  //  Default widgets
+  //
+  // ---------------------
+  search.addWidget(
+    instantsearch.widgets.searchBox({
+      container: '#search-input',
+      placeholder: 'Search for wine 🍷',
+    })
+  );
+
+  search.addWidget(
+    instantsearch.widgets.hits({
+      container: '#hits',
+      hitsPerPage: 10,
+      templates: {
+        item: getTemplate('hit'),
+      },
+      transformData: {
+        item: function(item) {
+          // We just call this function to log the data so that
+          // you can know what you can use in your item template
+          console.log(item);
+          return item;
+        },
+      },
+    })
+  );
+
+  search.start();
+}
+
+// ---------------------
+//
+//  Helper functions
+//
+// ---------------------
+function getTemplate(templateName) {
+  return document.querySelector(`#${templateName}-template`).innerHTML;
+}
+
+function getHeader(title) {
+  return `<h5>${title}</h5>`;
+}
+```
+
+We will also give our store a nice logo you can find at <https://wine-search.now.sh/images/wine-search.svg> (made in a few minutes Thursday evening by our awesome designer [Sebastien Navizet](https://dribbble.com/SebastienNvzt))
+
+Let's also remove the calls to the sqlite database:
+
+```js
+// routes/index.js
+var express = require('express');
+var router = express.Router();
+
+/* GET home page. */
+router.get('/', function(req, res, next) {
+  res.render('index');
+});
+
+module.exports = router;
+```
+
+And: 
+
+```diff
+// bin/www
+- Promise.resolve()
+-    .then(() => db.open('development.sqlite3', { Promise }))
+-    .catch(err => console.error(err.stack))
+-    .then(() => server.listen(port));
++  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+```

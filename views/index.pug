@@ -8,8 +8,14 @@ block content
     #search-input-icon
   main
     #left-column
+      #domain.facet
+      #price.facet
+      #year.facet
+      #type.facet
     #right-column
+      #stats
       #hits
+      #pagination
   script#hit-template(type='text/html').
     <div class="hit">
       <div class="hit-image">
@@ -23,6 +29,11 @@ block content
         <p>{{year}}</p>
         <p>{{{_highlightResult.domain.value}}}</p>
       </div>
+    </div>
+  script#no-results-template(type='text/html').
+    <div id="no-results-message">
+      <p>We didn't find any results for the search <em>"{{query}}"</em>.</p>
+      <a href="." class='clear-all'>Clear search</a>
     </div>
   script(src='https://cdn.jsdelivr.net/instantsearch.js/1/instantsearch.min.js')
   script(src='/javascripts/search.js')

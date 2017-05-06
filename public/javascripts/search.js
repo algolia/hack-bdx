@@ -42,14 +42,83 @@ function app(opts) {
       hitsPerPage: 10,
       templates: {
         item: getTemplate('hit'),
+        empty: getTemplate('no-results'),
       },
-      transformData: {
-        item: function(item) {
-          // We just call this function to log the data so that
-          // you can know what you can use in your item template
-          console.log(item);
-          return item;
+    })
+  );
+
+  search.addWidget(
+    instantsearch.widgets.stats({
+      container: '#stats',
+    })
+  );
+
+  search.addWidget(
+    instantsearch.widgets.pagination({
+      container: '#pagination',
+      scrollTo: '#search-input',
+    })
+  );
+
+  // ---------------------
+  //
+  //  Filtering widgets
+  //
+  // ---------------------
+  search.addWidget(
+    instantsearch.widgets.refinementList({
+      container: '#domain',
+      attributeName: 'domain',
+      sortBy: ['isRefined', 'count:desc', 'name:asc'],
+      searchForFacetValues: {
+        placeholder: 'Search for domains',
+        templates: {
+          noResults: '<div class="sffv_no-results">No matching domains.</div>',
         },
+      },
+      templates: {
+        header: getHeader('Domain'),
+      },
+    })
+  );
+
+  search.addWidget(
+    instantsearch.widgets.rangeSlider({
+      container: '#year',
+      attributeName: 'year',
+      tooltips: {
+        format: rawValue => rawValue,
+      },
+      templates: {
+        header: getHeader('Year'),
+      },
+    })
+  );
+
+  search.addWidget(
+    instantsearch.widgets.rangeSlider({
+      container: '#price',
+      attributeName: 'price',
+      tooltips: {
+        format: function(rawValue) {
+          return `$${Math.round(rawValue).toLocaleString()}`;
+        },
+      },
+      templates: {
+        header: getHeader('Price'),
+      },
+    })
+  );
+
+  search.addWidget(
+    instantsearch.widgets.menu({
+      container: '#type',
+      attributeName: 'type',
+      sortBy: ['isRefined', 'count:desc', 'name:asc'],
+      limit: 10,
+      showMore: true,
+      templates: {
+        header: getHeader('Type'),
       },
     })
   );

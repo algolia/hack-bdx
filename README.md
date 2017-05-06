@@ -22,3 +22,10 @@ $ git checkout node
 $ # or for rails:
 $ git checkout rails
 ```
+
+## Finding it on GitHub
+
+You can also follow via GitHub: 
+
+* [/tree/node](https://github.com/algolia/hack-bdx/tree/node)
+* [/tree/rails](https://github.com/algolia/hack-bdx/tree/rails)

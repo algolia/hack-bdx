@@ -1,4 +1,4 @@
-# Algolia workshop
+# <img src="https://www.algolia.com/static_assets/images/press/downloads/algolia-logo-light.svg" width="50%" />
 
 The goal of this workshop will be to create a sample application using Algolia.
 For this example, we'll use a Bordeaux related dataset: approximately 1000 wine bottles from the area.

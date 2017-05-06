@@ -318,3 +318,10 @@ And:
   server.on('error', onError);
   server.on('listening', onListening);
 ```
+
+## What now?
+
+You have access to the documentation of instantsearch.
+You can see what we did with it live [here](https://wine-search.now.sh).
+
+To see how we built it, you can check out the last commit of this repo.
